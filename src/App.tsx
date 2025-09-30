@@ -273,27 +273,31 @@ function AppContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4 max-h-80 overflow-y-auto custom-scrollbar">
-                {filteredTemplates.length > 0 ? (
-                  filteredTemplates.map((template, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleTemplateSelect(template)}
-                      className="bg-white border-2 border-black p-3 sm:p-4 hover:border-indigo-500 hover:neobrutalism-shadow transition text-left min-h-[120px] active:scale-95"
-                    >
-                      <div className="text-2xl sm:text-3xl mb-2">{template.icon}</div>
-                      <div className="font-bold text-gray-800 mb-1 text-xs sm:text-sm break-words">{template.name}</div>
-                      <div className="text-xs sm:text-sm text-gray-600">
-                        {template.price === 0 ? '無料' : `¥${template.price.toLocaleString()}`} / {template.cycle === 'monthly' ? '月' : '年'}
+              <div className="border-4 border-black neobrutalism-shadow bg-gray-50 mb-4 p-1">
+                <div className="max-h-80 overflow-y-auto bg-white border-2 border-black p-3 neobrutalism-scrollbar">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {filteredTemplates.length > 0 ? (
+                      filteredTemplates.map((template, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => handleTemplateSelect(template)}
+                          className="bg-white border-2 border-black p-3 sm:p-4 hover:border-indigo-500 hover:neobrutalism-shadow transition text-left min-h-[120px] active:scale-95"
+                        >
+                          <div className="text-2xl sm:text-3xl mb-2">{template.icon}</div>
+                          <div className="font-bold text-gray-800 mb-1 text-xs sm:text-sm break-words">{template.name}</div>
+                          <div className="text-xs sm:text-sm text-gray-600">
+                            {template.price === 0 ? '無料' : `¥${template.price.toLocaleString()}`} / {template.cycle === 'monthly' ? '月' : '年'}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">{template.category}</div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-8 text-gray-500 text-sm">
+                        該当するサービスが見つかりませんでした
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">{template.category}</div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="col-span-full text-center py-8 text-gray-500 text-sm">
-                    該当するサービスが見つかりませんでした
+                    )}
                   </div>
-                )}
+                </div>
               </div>
 
               <div className="border-t-4 border-black pt-4">
