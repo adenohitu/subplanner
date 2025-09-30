@@ -144,7 +144,8 @@ function AppContent() {
 
   // Load templates from local CSV
   useEffect(() => {
-    fetch('/templates.csv')
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    fetch(`${baseUrl}templates.csv`)
       .then(response => response.text())
       .then(text => {
         const lines = text.split('\n').slice(1); // Skip header
