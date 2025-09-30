@@ -8,4 +8,5 @@ export interface Subscription {
   nextBillingDate: string
   category?: string
   color?: string
+  order?: number
 }

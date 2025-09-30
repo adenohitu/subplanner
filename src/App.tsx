@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Edit2, DollarSign, Search, Filter, Settings, Download, Upload } from 'lucide-react';
+import { Plus, Trash2, Edit2, DollarSign, Search, Filter, Settings, Download, Upload, GripVertical } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 import type { Subscription } from '@/types/subscription';
 import { exportSubscriptionsToCSV, parseCSVToSubscriptions } from '@/lib/csv';
@@ -15,8 +18,90 @@ interface Template {
   icon: string;
 }
 
+interface SortableSubscriptionCardProps {
+  subscription: Subscription;
+  onEdit: (sub: Subscription) => void;
+  onDelete: (id: string) => void;
+}
+
+function SortableSubscriptionCard({ subscription, onEdit, onDelete }: SortableSubscriptionCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: subscription.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white border-2 border-black neobrutalism-shadow p-4 sm:p-5 transition-all ${
+        isDragging ? 'z-50 shadow-xl' : 'hover:translate-x-1 hover:translate-y-1 hover:shadow-none'
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <button
+          className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 border-2 border-black transition"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical size={18} className="text-gray-400" />
+        </button>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <h3 className="text-base sm:text-lg font-bold text-gray-800 break-words">{subscription.name}</h3>
+            {subscription.category && (
+              <span className="bg-indigo-100 text-indigo-700 border-2 border-black px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold whitespace-nowrap">
+                {subscription.category}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+          <button
+            onClick={() => onEdit(subscription)}
+            className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 border-2 border-black transition active:scale-95"
+            aria-label="編集"
+          >
+            <Edit2 size={18} className="sm:w-5 sm:h-5" />
+          </button>
+          <button
+            onClick={() => onDelete(subscription.id)}
+            className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 border-2 border-black transition active:scale-95"
+            aria-label="削除"
+          >
+            <Trash2 size={18} className="sm:w-5 sm:h-5" />
+          </button>
+        </div>
+      </div>
+      <div className="flex flex-wrap items-baseline gap-2 sm:gap-4 text-sm text-gray-600">
+        <span className="font-bold text-indigo-600 text-base sm:text-lg">
+          ¥{subscription.price.toLocaleString()}
+        </span>
+        <span className="text-gray-500">
+          {subscription.billingCycle === 'monthly' ? '/ 月' : '/ 年'}
+        </span>
+        {subscription.billingCycle === 'yearly' && (
+          <span className="text-gray-400 text-xs sm:text-sm">
+            (月額換算: ¥{Math.round(subscription.price / 12).toLocaleString()})
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function AppContent() {
-  const { subscriptions, addSubscription, updateSubscription, deleteSubscription } = useSubscriptions();
+  const { subscriptions, addSubscription, updateSubscription, deleteSubscription, reorderSubscriptions } = useSubscriptions();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -35,6 +120,26 @@ function AppContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const categories = ['すべて', 'エンタメ', '音楽', '仕事', 'クラウド', 'その他'];
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = subscriptions.findIndex((sub) => sub.id === active.id);
+      const newIndex = subscriptions.findIndex((sub) => sub.id === over.id);
+
+      const reordered = arrayMove(subscriptions, oldIndex, newIndex);
+      reorderSubscriptions(reordered);
+    }
+  };
 
   // Load templates from local CSV
   useEffect(() => {
@@ -399,62 +504,33 @@ function AppContent() {
             </div>
           )}
 
-          <div className="space-y-3">
-            {subscriptions.length === 0 ? (
-              <p className="text-center text-gray-500 py-8 text-sm sm:text-base">
-                サブスクが登録されていません
-              </p>
-            ) : (
-              subscriptions.map(sub => (
-                <div
-                  key={sub.id}
-                  className="bg-white border-2 border-black neobrutalism-shadow p-4 sm:p-5 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="space-y-3">
+              {subscriptions.length === 0 ? (
+                <p className="text-center text-gray-500 py-8 text-sm sm:text-base">
+                  サブスクが登録されていません
+                </p>
+              ) : (
+                <SortableContext
+                  items={subscriptions.map(sub => sub.id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <h3 className="text-base sm:text-lg font-bold text-gray-800 break-words">{sub.name}</h3>
-                        {sub.category && (
-                          <span className="bg-indigo-100 text-indigo-700 border-2 border-black px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold whitespace-nowrap">
-                            {sub.category}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => handleEdit(sub)}
-                        className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-50 border-2 border-black transition active:scale-95"
-                        aria-label="編集"
-                      >
-                        <Edit2 size={18} className="sm:w-5 sm:h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(sub.id)}
-                        className="p-1.5 sm:p-2 text-red-600 hover:bg-red-50 border-2 border-black transition active:scale-95"
-                        aria-label="削除"
-                      >
-                        <Trash2 size={18} className="sm:w-5 sm:h-5" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap items-baseline gap-2 sm:gap-4 text-sm text-gray-600">
-                    <span className="font-bold text-indigo-600 text-base sm:text-lg">
-                      ¥{sub.price.toLocaleString()}
-                    </span>
-                    <span className="text-gray-500">
-                      {sub.billingCycle === 'monthly' ? '/ 月' : '/ 年'}
-                    </span>
-                    {sub.billingCycle === 'yearly' && (
-                      <span className="text-gray-400 text-xs sm:text-sm">
-                        (月額換算: ¥{Math.round(sub.price / 12).toLocaleString()})
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+                  {subscriptions.map(sub => (
+                    <SortableSubscriptionCard
+                      key={sub.id}
+                      subscription={sub}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  ))}
+                </SortableContext>
+              )}
+            </div>
+          </DndContext>
 
           {/* Settings Dialog */}
           {showSettings && (

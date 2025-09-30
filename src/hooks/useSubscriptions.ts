@@ -5,7 +5,9 @@ const STORAGE_KEY = 'subscriptions'
 
 const getSubscriptions = (): Subscription[] => {
   const stored = localStorage.getItem(STORAGE_KEY)
-  return stored ? JSON.parse(stored) : []
+  const subscriptions: Subscription[] = stored ? JSON.parse(stored) : []
+  // Sort by order field, fallback to original order
+  return subscriptions.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity))
 }
 
 const saveSubscriptions = (subscriptions: Subscription[]) => {
@@ -22,9 +24,11 @@ export const useSubscriptions = () => {
 
   const addMutation = useMutation({
     mutationFn: (newSubscription: Omit<Subscription, 'id'>) => {
+      const maxOrder = subscriptions.reduce((max, sub) => Math.max(max, sub.order ?? 0), 0)
       const subscription: Subscription = {
         ...newSubscription,
         id: crypto.randomUUID(),
+        order: maxOrder + 1,
       }
       const updated = [...subscriptions, subscription]
       saveSubscriptions(updated)
@@ -59,10 +63,26 @@ export const useSubscriptions = () => {
     },
   })
 
+  const reorderMutation = useMutation({
+    mutationFn: (reorderedSubscriptions: Subscription[]) => {
+      // Update order field for all subscriptions
+      const updated = reorderedSubscriptions.map((sub, index) => ({
+        ...sub,
+        order: index,
+      }))
+      saveSubscriptions(updated)
+      return Promise.resolve(updated)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] })
+    },
+  })
+
   return {
     subscriptions,
     addSubscription: addMutation.mutate,
     updateSubscription: updateMutation.mutate,
     deleteSubscription: deleteMutation.mutate,
+    reorderSubscriptions: reorderMutation.mutate,
   }
 }
