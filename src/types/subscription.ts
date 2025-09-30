@@ -9,4 +9,5 @@ export interface Subscription {
   category?: string
   color?: string
   order?: number
+  isActive?: boolean
 }

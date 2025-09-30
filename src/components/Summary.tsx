@@ -7,13 +7,15 @@ interface SummaryProps {
 }
 
 export function Summary({ subscriptions }: SummaryProps) {
-  const totalMonthly = subscriptions.reduce((sum, sub) => {
+  const activeSubscriptions = subscriptions.filter((sub) => sub.isActive !== false)
+
+  const totalMonthly = activeSubscriptions.reduce((sum, sub) => {
     const monthlyPrice =
       sub.billingCycle === 'monthly' ? sub.price : sub.price / 12
     return sum + monthlyPrice
   }, 0)
 
-  const totalYearly = subscriptions.reduce((sum, sub) => {
+  const totalYearly = activeSubscriptions.reduce((sum, sub) => {
     const yearlyPrice =
       sub.billingCycle === 'yearly' ? sub.price : sub.price * 12
     return sum + yearlyPrice

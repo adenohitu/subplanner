@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
 import { SubscriptionForm } from './SubscriptionForm'
 import type { Subscription } from '@/types/subscription'
 
@@ -8,12 +9,14 @@ interface SubscriptionCardProps {
   subscription: Subscription
   onUpdate: (data: Subscription | Omit<Subscription, 'id'>) => void
   onDelete: (id: string) => void
+  onToggleActive: (id: string) => void
 }
 
 export function SubscriptionCard({
   subscription,
   onUpdate,
   onDelete,
+  onToggleActive,
 }: SubscriptionCardProps) {
   const monthlyPrice =
     subscription.billingCycle === 'monthly'
@@ -40,13 +43,20 @@ export function SubscriptionCard({
     >
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
-          <div>
-            <h3 className="text-2xl font-bold">{subscription.name}</h3>
-            {subscription.category && (
-              <Badge className="mt-2 border-2 border-black bg-white text-black hover:bg-white">
-                {subscription.category}
-              </Badge>
-            )}
+          <div className="flex items-start gap-3">
+            <Switch
+              checked={subscription.isActive !== false}
+              onCheckedChange={() => onToggleActive(subscription.id)}
+              className="mt-1"
+            />
+            <div>
+              <h3 className="text-2xl font-bold">{subscription.name}</h3>
+              {subscription.category && (
+                <Badge className="mt-2 border-2 border-black bg-white text-black hover:bg-white">
+                  {subscription.category}
+                </Badge>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             <SubscriptionForm

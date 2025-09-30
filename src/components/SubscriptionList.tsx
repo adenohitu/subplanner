@@ -5,12 +5,14 @@ interface SubscriptionListProps {
   subscriptions: Subscription[]
   onUpdate: (data: Subscription | Omit<Subscription, 'id'>) => void
   onDelete: (id: string) => void
+  onToggleActive: (id: string) => void
 }
 
 export function SubscriptionList({
   subscriptions,
   onUpdate,
   onDelete,
+  onToggleActive,
 }: SubscriptionListProps) {
   if (subscriptions.length === 0) {
     return (
@@ -33,6 +35,7 @@ export function SubscriptionList({
           subscription={subscription}
           onUpdate={onUpdate}
           onDelete={onDelete}
+          onToggleActive={onToggleActive}
         />
       ))}
     </div>

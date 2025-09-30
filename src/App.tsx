@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Edit2, DollarSign, Search, Filter, Settings, Download, Upload, GripVertical } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
@@ -23,9 +24,10 @@ interface SortableSubscriptionCardProps {
   subscription: Subscription;
   onEdit: (sub: Subscription) => void;
   onDelete: (id: string) => void;
+  onToggleActive: (id: string) => void;
 }
 
-function SortableSubscriptionCard({ subscription, onEdit, onDelete }: SortableSubscriptionCardProps) {
+function SortableSubscriptionCard({ subscription, onEdit, onDelete, onToggleActive }: SortableSubscriptionCardProps) {
   const {
     attributes,
     listeners,
@@ -50,13 +52,20 @@ function SortableSubscriptionCard({ subscription, onEdit, onDelete }: SortableSu
       }`}
     >
       <div className="flex items-start justify-between gap-3 mb-3">
-        <button
-          className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 border-2 border-black transition"
-          {...attributes}
-          {...listeners}
-        >
-          <GripVertical size={18} className="text-gray-400" />
-        </button>
+        <div className="flex items-start gap-2">
+          <button
+            className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 border-2 border-black transition"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical size={18} className="text-gray-400" />
+          </button>
+          <Switch
+            checked={subscription.isActive !== false}
+            onCheckedChange={() => onToggleActive(subscription.id)}
+            className="mt-1"
+          />
+        </div>
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <h3 className="text-base sm:text-lg font-bold text-gray-800 break-words">{subscription.name}</h3>
@@ -102,7 +111,7 @@ function SortableSubscriptionCard({ subscription, onEdit, onDelete }: SortableSu
 }
 
 function AppContent() {
-  const { subscriptions, addSubscription, updateSubscription, deleteSubscription, reorderSubscriptions } = useSubscriptions();
+  const { subscriptions, addSubscription, updateSubscription, deleteSubscription, reorderSubscriptions, toggleActive } = useSubscriptions();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -250,7 +259,9 @@ function AppContent() {
     return matchesSearch && matchesCategory;
   });
 
-  const monthlyTotal = subscriptions.reduce((sum, sub) => {
+  const activeSubscriptions = subscriptions.filter((sub) => sub.isActive !== false);
+
+  const monthlyTotal = activeSubscriptions.reduce((sum, sub) => {
     return sum + (sub.billingCycle === 'monthly' ? sub.price : sub.price / 12);
   }, 0);
 
@@ -527,6 +538,7 @@ function AppContent() {
                       subscription={sub}
                       onEdit={handleEdit}
                       onDelete={handleDelete}
+                      onToggleActive={toggleActive}
                     />
                   ))}
                 </SortableContext>

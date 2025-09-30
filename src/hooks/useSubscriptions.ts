@@ -29,6 +29,7 @@ export const useSubscriptions = () => {
         ...newSubscription,
         id: crypto.randomUUID(),
         order: maxOrder + 1,
+        isActive: true,
       }
       const updated = [...subscriptions, subscription]
       saveSubscriptions(updated)
@@ -78,11 +79,25 @@ export const useSubscriptions = () => {
     },
   })
 
+  const toggleActiveMutation = useMutation({
+    mutationFn: (id: string) => {
+      const updated = subscriptions.map((sub) =>
+        sub.id === id ? { ...sub, isActive: !sub.isActive } : sub
+      )
+      saveSubscriptions(updated)
+      return Promise.resolve(updated)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] })
+    },
+  })
+
   return {
     subscriptions,
     addSubscription: addMutation.mutate,
     updateSubscription: updateMutation.mutate,
     deleteSubscription: deleteMutation.mutate,
     reorderSubscriptions: reorderMutation.mutate,
+    toggleActive: toggleActiveMutation.mutate,
   }
 }
