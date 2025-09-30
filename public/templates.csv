@@ -1,0 +1,65 @@
+name,price,cycle,category,icon
+Netflix 広告つき,790,monthly,エンタメ,🎬
+Netflix スタンダード,1490,monthly,エンタメ,🎬
+Netflix プレミアム,1980,monthly,エンタメ,🎬
+Spotify Free,0,monthly,音楽,🎵
+Spotify Premium Standard,1080,monthly,音楽,🎵
+Spotify Premium 学生,580,monthly,音楽,🎵
+Spotify Premium Duo,1480,monthly,音楽,🎵
+Spotify Premium Family,1880,monthly,音楽,🎵
+YouTube Premium,1280,monthly,エンタメ,▶️
+YouTube Premium 学生,780,monthly,エンタメ,▶️
+YouTube Premium ファミリー,2280,monthly,エンタメ,▶️
+Amazon Prime,600,monthly,エンタメ,📦
+Amazon Prime 年払い,5900,yearly,エンタメ,📦
+Prime Student,300,monthly,エンタメ,📦
+Prime Student 年払い,2950,yearly,エンタメ,📦
+Amazon Music Unlimited,1080,monthly,音楽,🎵
+Amazon Music Unlimited (Prime会員),980,monthly,音楽,🎵
+Amazon Music Unlimited 学生,580,monthly,音楽,🎵
+Amazon Music Unlimited ファミリー,1680,monthly,音楽,🎵
+Disney+ スタンダード,1140,monthly,エンタメ,🏰
+Disney+ スタンダード 年払い,11400,yearly,エンタメ,🏰
+Disney+ プレミアム,1520,monthly,エンタメ,🏰
+Disney+ プレミアム 年払い,15200,yearly,エンタメ,🏰
+Hulu,1026,monthly,エンタメ,📺
+Hulu | Disney+ スタンダードセット,1690,monthly,エンタメ,📺
+Hulu | Disney+ プレミアムセット,1990,monthly,エンタメ,📺
+Apple Music,1080,monthly,音楽,🎵
+Apple Music 学生,580,monthly,音楽,🎵
+Apple Music ファミリー,1680,monthly,音楽,🎵
+Apple One,1200,monthly,仕事,🍎
+Apple TV+,900,monthly,エンタメ,📺
+U-NEXT,2189,monthly,エンタメ,🎬
+dアニメストア,550,monthly,エンタメ,🎬
+DMM TV,550,monthly,エンタメ,📺
+FODプレミアム,976,monthly,エンタメ,📺
+TELASA,990,monthly,エンタメ,📺
+Lemino,990,monthly,エンタメ,📺
+ABEMAプレミアム,960,monthly,エンタメ,📺
+Adobe Creative Cloud,6480,monthly,仕事,🎨
+Microsoft 365 Personal,1490,monthly,仕事,💼
+Microsoft 365 Personal 年払い,14900,yearly,仕事,💼
+ChatGPT Plus,2900,monthly,仕事,🤖
+ChatGPT Team,4300,monthly,仕事,🤖
+Claude Pro,2900,monthly,仕事,🤖
+Gemini Advanced,2900,monthly,仕事,🤖
+Microsoft Copilot Pro,4600,monthly,仕事,🤖
+Perplexity Pro,2900,monthly,仕事,🤖
+Perplexity Pro 年払い,28600,yearly,仕事,🤖
+Midjourney Basic,1430,monthly,仕事,🎨
+Midjourney Standard,5150,monthly,仕事,🎨
+Midjourney Pro,8600,monthly,仕事,🎨
+GitHub Copilot,1000,monthly,仕事,💻
+Notion,1200,monthly,仕事,📝
+Canva Pro,1500,monthly,仕事,🎨
+Dropbox Plus,1500,monthly,クラウド,📁
+Google One 100GB,250,monthly,クラウド,☁️
+Google One 200GB,380,monthly,クラウド,☁️
+Google One 2TB,1300,monthly,クラウド,☁️
+iCloud+ 50GB,130,monthly,クラウド,☁️
+iCloud+ 200GB,400,monthly,クラウド,☁️
+iCloud+ 2TB,1300,monthly,クラウド,☁️
+LINE MUSIC,1080,monthly,音楽,🎵
+LINE MUSIC 学生,580,monthly,音楽,🎵
+YouTube Music Premium,1080,monthly,音楽,🎵
