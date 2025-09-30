@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Subscription } from '@/types/subscription'
 
-const STORAGE_KEY = 'subscriptions'
+const STORAGE_KEY = 'subplanner_subscriptions'
 
 const getSubscriptions = (): Subscription[] => {
   const stored = localStorage.getItem(STORAGE_KEY)
