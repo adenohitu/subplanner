@@ -291,16 +291,23 @@ function AppContent() {
           `${importedSubs.length}件のサブスクリプションをインポートします。\n\nOK: 既存データを上書き\nキャンセル: 既存データに追加`
         );
 
+        // Directly manipulate localStorage to avoid async mutation issues
+        const STORAGE_KEY = 'subplanner_subscriptions';
+        let finalSubscriptions: Subscription[];
+
         if (shouldReplace) {
-          // Replace all: clear existing and add imported
-          subscriptions.forEach(sub => deleteSubscription(sub.id));
-          importedSubs.forEach(sub => addSubscription(sub));
+          // Replace all with imported data
+          finalSubscriptions = importedSubs;
         } else {
           // Add to existing
-          importedSubs.forEach(sub => addSubscription(sub));
+          finalSubscriptions = [...subscriptions, ...importedSubs];
         }
 
-        alert(`${importedSubs.length}件のサブスクリプションをインポートしました。`);
+        // Save to localStorage and trigger re-fetch
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(finalSubscriptions));
+
+        // Force query refetch
+        window.location.reload();
       }
     };
 
