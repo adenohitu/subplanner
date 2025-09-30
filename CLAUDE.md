@@ -13,8 +13,22 @@ Subplanner is a subscription management application built with React, TypeScript
 - **Test**: `bun test` - Run tests with Bun's test runner
 - **Lint**: `bun run lint` - Run ESLint
 - **Preview**: `bun run preview` - Preview production build
+- **Sync Templates**: `bun run sync <spreadsheet-url>` - Sync templates from Google Sheets to `public/templates.csv`
 
 Note: This project uses **Bun** as the package manager and runtime, not npm or yarn.
+
+### Template Synchronization
+
+The app uses `public/templates.csv` as the template data source. To sync templates from Google Sheets:
+
+```bash
+bun run sync https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=YOUR_GID
+```
+
+Requirements:
+- The spreadsheet must be published to the web ("File → Share → Publish to web")
+- CSV must have columns: `name`, `price`, `cycle`, `category`, `icon`
+- The sync script updates `public/templates.csv` which is tracked in git
 
 ## Architecture
 
