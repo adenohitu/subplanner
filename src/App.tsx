@@ -458,8 +458,14 @@ function AppContent() {
 
           {/* Settings Dialog */}
           {showSettings && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 sm:p-6">
-              <div className="bg-white border-4 border-black neobrutalism-shadow-xl p-4 sm:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 sm:p-6"
+              onClick={() => setShowSettings(false)}
+            >
+              <div
+                className="bg-white border-4 border-black neobrutalism-shadow-xl p-4 sm:p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <h2 className="text-xl sm:text-2xl font-bold mb-4 text-gray-800">設定</h2>
                 <div className="space-y-4">
                   {/* CSV Export/Import Section */}
